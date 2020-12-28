@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <!--    <script src="assets/vendor/three.js/three.js"></script>-->
+
+    <!-- <link rel="stylesheet" href="assets/vendor/rangeslider/rangeslider.css"> -->
+    <link rel="stylesheet" href="assets/vendor/typo/typo.css">
+    <link rel="stylesheet" href="assets/vendor/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/vendor/eastforce-slider/eastforce-slider.css">
+
+    <script src="assets/vendor/eastforce-slider/eastforce-slider.js"></script>
+    <script src="assets/vendor/bootstrap/bootstrap.min.js"></script>
+    <script src="assets/vendor/jquery.nicescroll/jquery.nicescroll.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/chladni.js"></script>
+    <!-- <script src="assets/js/sketch.js"></script> -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/js/app.js" defer></script>
+    <script src="/eel.js"></script>
+    <script src="https://cdn.bootcss.com/three.js/92/three.min.js"></script>
+    <!--<script src="../libs/three.js"></script>-->
+    <script src="https://threejs.org/examples/js/utils/SceneUtils.js"></script>
+    <script src="https://threejs.org/examples/js/libs/stats.min.js"></script>
+    <script src="https://threejs.org/examples/js/controls/TrackballControls.js"></script>
+    <script src="https://threejs.org/examples/js/libs/dat.gui.min.js"></script>
+    <title>氢原子波函数仿真</title>
+</head>
+
+<body>
+<main>
+    <div class="flex">
+        <div class="control-panel">
+            <div class="scroll"
+                 style="overflow-x: hidden; overflow-y:hidden; width: 240px; min-height: 800px;    padding-left: .2em;">
+                <center>
+                    <h2>参数控制</h2>
+                </center>
+                <hr>
+                <div class="param-title">轨道参量</div>
+                <!-- <div>
+                    <label>尺寸大小</label>
+                    <div class="range-slider">
+                        <input id="paramA" class="slider" type="text" data-slider-value="100" data-slider-min="1"
+                            data-slider-max="200" data-slider-ticks='[1, 200]'
+                            data-slider-ticks-labels='["1", "200"]'>
+                    </div>
+                </div>
+                <div>
+                    <label>宽边b(mm) </label>
+                    <div class="range-slider">
+                        <input id="paramB" class="slider" type="text" data-slider-value="100" data-slider-min="100"
+                            data-slider-max="400" data-slider-ticks='[100, 400]'
+                            data-slider-ticks-labels='["100", "400"]'>
+                    </div>
+                </div>
+                <div>
+                    <label>厚度h(mm) </label>
+                    <div class="range-slider">
+                        <input id="paramH" class="slider" type="text" data-slider-value="1" data-slider-min="1"
+                            data-slider-max="5" data-slider-ticks='[1, 5]' data-slider-ticks-labels='["1", "5"]'>
+
+                    </div>
+                </div> -->
+                <div style="display:-webkit-inline-box;height:48rpx;width:100%">
+                    <div style="width:40%;line-height:48px"><label>主量子数n</label></div>
+                    <div class="select" style="width:60%;line-height:48px;">
+                        <select name="slct" id="n">
+                            <option value='1'>n=1</option>
+                            <option value='2'>n=2</option>
+                            <option value='3'>n=3</option>
+                            <option value='4' selected>n=4</option>
+                            <option value='5'>n=5</option>
+                            <option value='6'>n=6</option>
+                            <option value='7'>n=7</option>
+                            <option value='8'>n=8</option>
+                            <option value='9'>n=9</option>
+                            <option value='10'>n=10</option>
+                            <option value='11'>n=11</option>
+                            <option value='12'>n=12</option>
+                            <option value='13'>n=13</option>
+                            <option value='14'>n=14</option>
+                            <option value='15'>n=15</option>
+                            <option value='16'>n=16</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display:-webkit-inline-box;height:48rpx;width:100%">
+                    <div style="width:40%;line-height:48px"><label>角量子数l</label></div>
+                    <div class="select" style="width:60%;line-height:48px">
+                        <select name="slct" id="paramL">
+                            <option value='0'>l=0</option>
+                            <option value='1' selected>l=1</option>
+                            <option value='2'>l=2</option>
+                            <option value='3'>l=3</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:-webkit-inline-box;height:48rpx;width:100%">
+                    <div style="width:40%;line-height:48px"><label>磁量子数|m|</label></div>
+                    <div class="select" style="width:60%;line-height:48px">
+                        <select name="slct" id="paramM">
+                            <option value='-1'>m=-1</option>
+                            <option value='0' selected>m=0</option>
+                            <option value='1'>m=1</option>
+                            <!-- <option value='3'>m=3</option> -->
+                            <!-- <option value='4'>m=4</option> -->
+                        </select>
+                    </div>
+                </div>
+                <hr>
+                <!-- <div class="param-title">显示参量</div> -->
+                <!-- <div class="frequency">
+                    <label>振动频率f(Hz)</label>
+                    <div class="adjust-buttons">
+                        <p>
+                            <button class="adjust-button adjust-button-db" onmousedown="adjustParamF(+10)">
+                                <img src="./assets/images/up2.svg">
+                            </button>
+                            <button class="adjust-button f-plus" onmousedown="adjustParamF(+1)">
+                                <img src="./assets/images/up.svg">
+                            </button>
+                        </p>
+                        <p>
+                            <button class="adjust-button adjust-button-db" onmousedown="adjustParamF(-10)">
+                                <img src="./assets/images/down2.svg">
+                            </button>
+                            <button class="adjust-button f-plus" onmousedown="adjustParamF(-1)">
+                                <img src="./assets/images/down.svg">
+                            </button>
+
+                        </p>
+                    </div>
+                    <div class="range-slider">
+                        <input onchange="userDefF = true" id="paramF" class="slider" type="text"
+                            data-slider-value="100" data-slider-min="100" data-slider-ticks='[100, 10000]'
+                            data-slider-ticks-labels='["100", "10000"]' data-slider-max="100">
+                    </div>
+                    <div class="frequency-box">
+                        <p>特征频率</p>
+                        <ul class="frequency-list"></ul>
+                    </div>
+                </div> -->
+                <br>
+
+                <!-- <div class="play-frequency">
+                    <label>频率音调</label>
+                    <svg onclick="btnPlayClick()" version="1.1" id="play" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" height="40px" width="40px"
+                        viewBox="0 0 100 100" enable-background="new 0 0 100 100" xml:space="preserve">
+                        <path class="stroke-solid" fill="none" stroke="#99bbff" d="M49.9,2.5C23.6,2.8,2.1,24.4,2.5,50.4C2.9,76.5,24.7,98,50.3,97.5c26.4-0.6,47.4-21.8,47.2-47.7
+C97.3,23.7,75.7,2.3,49.9,2.5" />
+                        <path class="icon" fill="#99bbff"
+                            d="M38,69c-1,0.5-1.8,0-1.8-1.1V32.1c0-1.1,0.8-1.6,1.8-1.1l34,18c1,0.5,1,1.4,0,1.9L38,69z" />
+                    </svg>
+                </div>
+                <hr>  -->
+                <div class="param-title">显示参量</div>
+                <div>
+                    <label>尺寸大小</label>
+                    <div class="range-slider">
+                        <input id="paramSize" class="slider" type="text" data-slider-value="100" data-slider-min="1"
+                               data-slider-max="200" data-slider-ticks='[1, 200]'
+                               data-slider-ticks-labels='["1", "200"]'>
+                    </div>
+                </div>
+                <div>
+                    <label>亮度 </label>
+                    <div class="range-slider">
+                        <input id="paramBri" class="slider" type="text" data-slider-value="100" data-slider-min="1"
+                               data-slider-max="100" data-slider-ticks='[1, 100]'
+                               data-slider-ticks-labels='["1", "100"]'>
+                    </div>
+                </div>
+
+                <!-- <div class="vibration-color color-box">
+                    <p>振动板色彩</p>
+                    <div class="color-kit">
+                        <div class="color-bar"></div>
+                        <div class='container vibration-container'>
+                            <div class="indicator vibration-indicator">
+                                <div class="indicator-left vibration-indicator-left"></div>
+                                <div class="indicator-right vibration-indicator-right"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> -->
+                <div class="gravel-color color-box">
+                    <p>色彩展示</p>
+                    <div class="color-kit">
+                        <div class="color-bar"></div>
+                        <div class='container gravel-container'>
+                            <div class="indicator gravel-indicator">
+                                <div class="indicator-left gravel-indicator-left"></div>
+                                <div class="indicator-right gravel-indicator-right"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div>
+                    <label class="toggle">
+                        <input class="toggle__input" id="originColor" type="checkbox">
+                        <span class="toggle__label">
+                                <span class="toggle__text"> 径向概率分布图
+                                </span>
+                            </span>
+                    </label>
+                </div>
+                <div class="refresh">
+                    <button class="refreshBtn">刷&nbsp&nbsp新</button>
+                </div>
+            </div>
+        </div>
+        <div class="simulation" style="display:-webkit-box">
+            <div style="display:-webkit-box;width:900px;height:400px;margin-top: 200px;margin-left:100px;background-color: white" >
+                <div style="width:400px;height:400px">
+                    <canvas id="Canvas" class='drawing-board' width='400' height='400'></canvas>
+                </div>
+                <div id="3d" style="width:400px;height:400px;"></div>
+            </div>
+
+        </div>
+    </div>
+</main>
+<footer class="flex">
+    <div class="bottom-bar-left ml-4 flex" style="align-items: center; height: 100%;">
+        <div style="color: #595959; font-size: 2em;">氢原子波函数仿真
+        </div>
+    </div>
+    <div class="bottom-bar-right mr-4 flex">
+        <button type="button" class="round-button img-info mr-4" data-toggle="modal" data-target="#modalDesc">
+        </button>
+        <button type="button" class="round-button img-reset mr-4" onclick="reset()">
+        </button>
+
+        <img height="60px" src="assets/images/logo.png"/>
+    </div>
+</footer>
+<div class="modal" id="modalDesc" tabindex="-1" role="dialog" aria-labelledby="modalDescTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">实验说明</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <p>克拉尼图形，又称&ldquo;克拉德尼声音图案&rdquo;，十八世纪，德国物理学家恩斯特&middot;克拉德尼做过一个实验，他在一个小提琴上安放一块较宽的金属薄片，在上面均匀地撒上沙子。然后开始用琴弓拉小提琴，结果这些细沙自动排列成不同的美丽图案，并随着琴弦拉出的曲调不同和频率的不断增加，图案则不动。更具体地说，你可以看到沿着板的波节线的驻波。沙子也不断变幻和越趋复杂。当板受到激励时，部分区域会振动，而另一些区域从驻波振幅最大的.波腹,向驻波振幅最小的波节线&nbsp;移动，形成克拉尼图形。
+                </p>
+                <p>包括克拉尼板在内的所有物体都有一套振动的固有频率。一个系统，如乐器中的驻波，往往以固有频率或特征频率等离散频率振动。结构以某一频率振动后，就会变形为相应的形状：特征模态。</p>
+                <p>板是一个连续系统，其特征频率取决于几何结构、材料属性和约束条件。它能表现的特征频率数量是无限的，板的固有频率很大程度上取决于几何结构边的形状和支撑条件以及它的抗弯刚度。</p>
+                <p>本仿真使用的公式： </p>
+                <p><img src="assets/images/fomula/equation.svg"/></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
