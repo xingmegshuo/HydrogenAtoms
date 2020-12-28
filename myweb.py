@@ -40,33 +40,7 @@ def make_materx(n, l, m):
         Ylm1 = np.sqrt(2) * (-1) ** m * Ylm1.real
     r = np.abs(Ylm1.real) * xyz_2d
 
-    R = {"r0": 1e-15}
-    F = {"f0": 0.0}
-    G = {"g0": 0.0}
-    nn = 0
-
-    s = 1
-    m = 360
-    E = -0.03125
-
-    F["f1"] = 0.0001
-    R["r1"] = R["r0"] + s
-    G["g0"] = l * (l + 1) / (R["r0"] ** 2) - 2 / R["r0"] - 2 * E
-    G["g1"] = l * (l + 1) / (R["r1"] ** 2) - 2 / R["r1"] - 2 * E
-    ss = s * s / 12
-
-    for i in range(1, m + 1):
-        R["r%s" % (i + 1)] = R["r%s" % i] + s
-        G["g%s" % (i + 1)] = l * (l + 1) / (R["r%s" % (i + 1)] ** 2) - 2 / R["r%s" % (i + 1)] - 2 * E
-        F["f%s" % (i + 1)] = (-F["f%s" % (i - 1)] + 2 * F["f%s" % i] + 10 * G["g%s" % i] * F["f%s" \
-                                                                                             % i] * ss + G[
-                                  "g%s" % (i - 1)] * F["f%s" % (i - 1)] * ss) / (1 - G["g%s" % (i + 1)] * ss)
-        if (F["f%s" % i] * F["f%s" % (i + 1)] < 0):
-            nn = nn + 1
-    x = []
-    for i in range(m + 1):
-        x.append([R["r%s" % i], F["f%s" % i] / R["r%s" % i]])
-    plt.plot([i[0] for i in x], [i[1] for i in x])
+    plt.plot(r[0], r[1])
     plt.show()
     # console('./assets/images/a.png', r)
 
@@ -77,4 +51,4 @@ def make_materx(n, l, m):
 
 # eel.start('index.html')
 
-make_materx(4, 2, 2)
+make_materx(4, 2, 0)
