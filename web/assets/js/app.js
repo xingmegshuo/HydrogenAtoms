@@ -12,8 +12,7 @@ const gravelBar = document.querySelector(".gravel-color .color-bar")
 // const vibrationIndicator = document.querySelector(".vibration-indicator")
 const gravelindicator = document.querySelector(".gravel-indicator")
 
-// 径向分布控制
-const originColor = document.querySelector("#originColor")
+
 // const vibrationContainer = document.querySelector(".vibration-container")
 const gravelContainer = document.querySelector(".gravel-container")
 
@@ -22,7 +21,12 @@ const material = document.querySelector("#n")
 const paramL = document.querySelector("#paramL")
 const paramM = document.querySelector("#paramM")
 const refreshBtn = document.querySelector(".refreshBtn")
+
+
+// 径向分布控制
+const originColor = document.querySelector("#originColor")
 var r = new Array();
+var y = new Array();
 var src = '';
 var isFinish = false
 
@@ -44,8 +48,8 @@ var isFinish = false
 
 })()
 
+
 function drawNow() {
-    console.log('改变图')
     drawChladni(material.value, paramL.value, paramM.value)
 }
 
@@ -64,9 +68,7 @@ material.onchange = function () {
     drawNow()
 }
 
-
 paramL.onchange = function () {
-    console.log("角量子改变")
     var m = document.getElementById('paramM')
     var selectOptions = m.options
     var optionLength = selectOptions.length
@@ -80,30 +82,29 @@ paramL.onchange = function () {
     }
     drawNow()
 }
-
 paramM.onchange = function () {
     drawNow();
 }
 
 
+originColor.onchange = function () {
+    var a = document.getElementById('aa')
+    console.log(a.style.display)
+    if (a.style.display == 'none') {
+        a.style.display = 'inline'
+    } else {
+        a.style.display = 'none'
+    }
+}
+
 //图形绘制比例
 var scale = 2
 //初始绘制颜色
-var bgColor = "white"
 var chladniColor = "#d9ff69"
 
 //缓存计算结果
 var cache = null
-
 //获取当前参数值
-var currentParam = {
-    n: material.value,
-    l: paramL.value,
-    m: paramM.value,
-    size: elSize,
-    bri: elBri,
-}
-
 
 //进行首次绘制
 drawChladni(material.value, paramL.value, paramM.value)
@@ -128,66 +129,45 @@ gravelBar.onclick = function (ev) {
     console.log(chladniCurrentPosi)
     //移动指示器位置
     gravelindicator.style.transform = `translateX(${ev.offsetX - gravelInitialPosi}PX)`
-
-}
-// 色彩条拖动
-let startPosi = 0
-let endPosi = 0
-let currentPosi = 0
-let displacement = 0
-
-let isGravelIndicatorDown = false
-let isGravelMouseOut = false
-// let isGravelMove = falseassets
-originColor.onchange = function () {
-
+    chladniColor = getColor(chladniCurrentPosi / gravelBar.offsetWidth, 'gravel')
+    drawNow()
 }
 
-/**
- * 绘制图样
- * @param {*} bgColor      背景颜色
- * @param {*} chladniColor 克拉尼图样颜色
- * @param {*} isRefresh    是否强制重新计算
- */
 
 function getValue(n, l, m) {
     eel.make_materx(n, l, m)
     eel.expose(result);
 
-    function result(imgPath, rvalue) {
+    function result(imgPath, rvalue, qu) {
         src = imgPath
         r = rvalue
-        console.log(src, r)
+        y = qu
+        console.log(src, r, y)
     }
 }
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 var renderer = new THREE.WebGLRenderer();
-renderer.setClearColor('rgb(255,255,255)',1.0);
-renderer.setSize(400,400);
+renderer.setClearColor('rgb(0,0,0)', 1.0);
+renderer.setSize(400, 400);
 document.getElementById('3d').appendChild(renderer.domElement);
+camera.position.z = 120;
+
 
 //  画图
 function drawChladni(n, l, m) {
-    // var param = {
-    //     n: material.value,
-    //     l: paramL.value,
-    //     m: paramM.value,
-    //     size: elSize,
-    //     bri: elBri,
-    // }
+
     getValue(n, l, m)
-    console.log(n, l, m)
 
     setTimeout(function () {
         //密度图
         var canvas = document.getElementById("Canvas")
         var ctx = canvas.getContext("2d")
-        ctx.strokeStyle = "black"
-        ctx.font = "24px Arial"
-
-        ctx.fillText("密度图", 140, 370)
+        // ctx.strokeStyle = "black"
+        // ctx.font = "24px Arial"
+        //
+        // ctx.fillText("密度图", 140, 370)
         var img = new Image()
         img.src = src
         img.onload = function () {
@@ -195,6 +175,32 @@ function drawChladni(n, l, m) {
             ctx.drawImage(img, 30, 30, 320, 320);
             ctx.beginPath();
             ctx.stroke();
+        }
+
+        // 密度曲线图
+        var can = document.getElementById('qu')
+        var ct = can.getContext("2d")
+        can.height = can.height
+        ct.strokeStyle = 'red';
+        ct.lineWidth = 3;
+        ct.moveTo(0, 346);
+        for (var i = 0; i < 149; i++) {
+            ct.lineTo(i, 346 - y[i + 1])
+        }
+        ct.stroke();
+
+        // 密度色彩标定
+        var co = document.getElementById('colo')
+        var cc = parseInt(n) - parseInt(l)
+        var col = 220
+        var cog = 34
+        var cob = 34
+        co.innerHTML = ''
+        for (var i = 0; i < cc; i++) {
+            col = col - 10 * i
+            cog = cog - 3 * i
+            cob = cog - i
+            co.innerHTML += "<div style='background-color: rgb(" + col + "," + cog + "," + cob + ") ;height:" + 360 / cc + "px'></div>"
         }
 
         var geometry = new THREE.Geometry(); //声明一个几何体对象Geometry
@@ -208,25 +214,23 @@ function drawChladni(n, l, m) {
 
         //如果以点的形式渲染，需要设置点对应材质
         var pointMaterial = new THREE.PointsMaterial({
-            color: 0xD2691E,    //设置颜色，默认 0xFFFFFF
+            color: chladniColor,    //设置颜色，默认 0xFFFFFF
             vertexColors: false, //定义材料是否使用顶点颜色，默认false ---如果该选项设置为true，则color属性失效
             size: 1             //定义粒子的大小。默认为1.0
         });
-        //生成点模型
+        while (scene.children.length > 0) {
+            scene.remove(scene.children[0]);
+        }
         var cube = new THREE.Points(geometry, pointMaterial);
-
-        scene.add(cube);
-        camera.position.z = 120;
         var animate = function () {
             requestAnimationFrame(animate);
             cube.rotation.x += 0.01;
             cube.rotation.y += 0.01;
             renderer.render(scene, camera);
-
         };
-        // renderer.render(scene, camera);
         animate();
-        geometry.verticesNeedUpdate = true;
+        scene.add(cube);
+
     }, 2000)
 
 
@@ -309,6 +313,12 @@ function getColor(percent, which) {
 
     })
     return `rgb(${r},${g},${b})`
+}
+
+function reset() {
+    drawChladni(
+        4, 2, 0
+    )
 }
 
 //重置canvas绘图区域并绘图
