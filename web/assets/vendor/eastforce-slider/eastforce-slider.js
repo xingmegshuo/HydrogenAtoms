@@ -1295,7 +1295,8 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 				this._layout();
 				this._setDataVal(val);
 				this._trigger('slideStop', val);
-				drawChladni(bgColor,chladniColor)
+				changeSize(val)
+				// drawChladni(bgColor,chladniColor)
 				return false;
 			},
 			_calculateValue: function _calculateValue(snapToClosestTick) {

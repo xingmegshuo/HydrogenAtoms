@@ -44,8 +44,7 @@ var isFinish = false
      */
 ;(function () {
     elBri.slider('setValue', 20)  //亮度
-    elSize.slider('setValue', 30) //尺寸
-
+    elSize.slider('setValue', 40) //尺寸
 })()
 
 
@@ -97,10 +96,14 @@ originColor.onchange = function () {
     }
 }
 
+elSize.onchange = function () {
+    console.log(elSize.value)
+}
+
 //图形绘制比例
 var scale = 2
 //初始绘制颜色
-var chladniColor = "#d9ff69"
+var chladniColor = "#FF4040"
 
 //缓存计算结果
 var cache = null
@@ -135,24 +138,42 @@ gravelBar.onclick = function (ev) {
 
 
 function getValue(n, l, m) {
-    eel.make_materx(n, l, m)
-    eel.expose(result);
+    $.ajax({
+        url:'https://www.menguoli.com/hyo',
+        data:{'n':n,'l':l,'m':m},
+        async:false,//设置同步/异步的参数[true异步  false同步]
+        success: function(value){
+            src = value.src;
+            r = value.r;
+            if (value.y!='none'){
+                y = value.y
+            } 
+        }
+    })
 
-    function result(imgPath, rvalue, qu) {
-        src = imgPath
-        r = rvalue
-        y = qu
-        console.log(src, r, y)
-    }
+    // 这是本地服务
+    // eel.make_materx(n, l, m)
+    // eel.expose(result);
+
+    // function result(imgPath, rvalue, qu) {
+        // src = imgPath
+        // r = rvalue
+        // y = qu
+        // console.log(src, r, y)
+    // }
+}
+
+var size = 40
+function changeSize(val){
+    size = val
+    drawNow()
 }
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 var renderer = new THREE.WebGLRenderer();
-renderer.setClearColor('rgb(0,0,0)', 1.0);
-renderer.setSize(400, 400);
-document.getElementById('3d').appendChild(renderer.domElement);
-camera.position.z = 120;
+
+
 
 
 //  画图
@@ -164,6 +185,9 @@ function drawChladni(n, l, m) {
         //密度图
         var canvas = document.getElementById("Canvas")
         var ctx = canvas.getContext("2d")
+        canvas.width = size*10
+        canvas.height = size*10
+
         // ctx.strokeStyle = "black"
         // ctx.font = "24px Arial"
         //
@@ -172,7 +196,25 @@ function drawChladni(n, l, m) {
         img.src = src
         img.onload = function () {
             // console.log(img)
-            ctx.drawImage(img, 30, 30, 320, 320);
+            ctx.drawImage(img, 0,0, size*10, size*10);
+            ctx.strokeStyle='white'
+            ctx.fillStyle = '#fff';
+            ctx.font = "14px Arial"
+            ctx.lineWidth = 2
+            for (var i =1 ;i<30;i++){
+                ctx.moveTo(0,size/3*i)
+                ctx.lineTo(5,size/3*i)
+                ctx.moveTo(size/3*i,size*10)
+                ctx.lineTo(size/3*i,size*10-5)
+                if (i%5==0){
+                    ctx.fillText(15-i, 8,size/3*i)
+                    ctx.fillText(i-15, size/3*i, size*10-8)
+                }
+            }
+            ctx.fillText("-15",8,size/3*29)
+            ctx.fillText("15",8,size/3*1)
+            ctx.fillText("15",size/3*28,size*10-8)
+            ctx.stroke()
             ctx.beginPath();
             ctx.stroke();
         }
@@ -190,19 +232,27 @@ function drawChladni(n, l, m) {
         ct.stroke();
 
         // 密度色彩标定
-        var co = document.getElementById('colo')
-        var cc = parseInt(n) - parseInt(l)
-        var col = 220
-        var cog = 34
-        var cob = 34
-        co.innerHTML = ''
-        for (var i = 0; i < cc; i++) {
-            col = col - 10 * i
-            cog = cog - 3 * i
-            cob = cog - i
-            co.innerHTML += "<div style='background-color: rgb(" + col + "," + cog + "," + cob + ") ;height:" + 360 / cc + "px'></div>"
-        }
+        // var co = document.getElementById('colo')
+        // var cc = 255
+        // var col = 255
+        // var cog = 165
+        // var cob = 0
+        // co.innerHTML = ''
+        // for (var i = 0; i < cc; i++) {
+          
+        //         col = col -1
+        //         cog = cog -0.1
+        //         cob = cog
+            
 
+        //     co.innerHTML += "<div style='background-color: rgb(" + col + "," + cog + "," + cob + ") ;height:" + 360 / cc + "px'></div>"
+        // }
+
+
+        renderer.setClearColor('rgb(0,0,0)', 1.0);
+renderer.setSize(size*10, size*10);
+document.getElementById('3d').appendChild(renderer.domElement);
+camera.position.z = 120;
         var geometry = new THREE.Geometry(); //声明一个几何体对象Geometry
         for (var i = 0; i < 91; i++) {
             for (var j = 0; j < 181; j++) {
@@ -316,9 +366,7 @@ function getColor(percent, which) {
 }
 
 function reset() {
-    drawChladni(
-        4, 2, 0
-    )
+    location.reload()
 }
 
 //重置canvas绘图区域并绘图
@@ -327,3 +375,4 @@ function reset() {
 //     drawingBoard.height = window.innerHeight - 80;
 //     drawChladni(bgColor, chladniColor)
 // }
+

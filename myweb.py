@@ -25,12 +25,11 @@ def make_materx(n, l, m):
     fig, ax = plt.subplots(figsize=(10, 10))
     ax.imshow(density.real,
               extent=[-density.max() * 0.2, density.max() * 0.2, -density.max() * 0.2, density.max() * 0.2],
-              cmap='jet_r')
+              cmap='gist_stern')
     # plt.show()
     fig.set_facecolor('black')
     fig.savefig("web/assets/images/a.png", dpi=300)
     plt.close()
-    plt.show()
     theta1 = np.linspace(0, 2 * np.pi, 181)
     phi1 = np.linspace(0, np.pi, 91)
     theta_2d, phi_2d = np.meshgrid(theta1, phi1)
@@ -61,4 +60,4 @@ def console(src, r, y):
 
 eel.start('index.html')
 
-# make_materx(4, 1, 0)
+make_materx(4, 2, 0)
