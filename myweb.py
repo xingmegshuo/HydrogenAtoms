@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 from scipy.special import sph_harm
 from scipy.special import assoc_laguerre
 
-import eel
+# import eel
 
-eel.init('web')
+# eel.init('web')
 
-
-@eel.expose
+#
+# @eel.expose
 def make_materx(n, l, m):
     n, l, m = float(n), float(l), float(m)
     x = np.linspace(-n ** 2 * 4, n ** 2 * 4, 500)
@@ -49,15 +49,15 @@ def make_materx(n, l, m):
     T = T.tolist()[100:250]
     y = [round(x[249:250][0], 6) * 300 for x in T]
 
-    # plt.plot([y.index(x) for x in y], y)
-    # plt.show()
-    console('./assets/images/a.png', r, y)
+    plt.plot([y.index(x) for x in y], y)
+    plt.show()
+    # console('./assets/images/a.png', r, y)
 
 
-def console(src, r, y):
-    eel.result(src, r.tolist(), y)
+# def console(src, r, y):
+#     eel.result(src, r.tolist(), y)
 
 
-eel.start('index.html')
+# eel.start('index.html')
 
-make_materx(4, 2, 0)
+make_materx(6, 4, 3)

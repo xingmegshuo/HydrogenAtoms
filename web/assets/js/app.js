@@ -75,9 +75,15 @@ paramL.onchange = function () {
         m.removeChild(selectOptions[0])
     }
     console.log("角量子改变")
-    for (var i = -parseInt(paramL.value); i <= parseInt(paramL.value); i++) {
 
-        m.innerHTML += "<option value='" + i + "'>m=" + i + "</option>"
+    for (var i = -parseInt(paramL.value); i <= parseInt(paramL.value); i++) {
+        if (i == 0) {
+            m.innerHTML += "<option value='" + i + " ' selected>m=" + i + "</option>"
+
+        } else {
+            m.innerHTML += "<option value='" + i + "'>m=" + i + "</option>"
+
+        }
     }
     drawNow()
 }
@@ -96,9 +102,6 @@ originColor.onchange = function () {
     }
 }
 
-elSize.onchange = function () {
-    console.log(elSize.value)
-}
 
 //图形绘制比例
 var scale = 2
@@ -138,16 +141,18 @@ gravelBar.onclick = function (ev) {
 
 
 function getValue(n, l, m) {
+    console.log(n, l, m)
     $.ajax({
-        url:'https://www.menguoli.com/hyo',
-        data:{'n':n,'l':l,'m':m},
-        async:false,//设置同步/异步的参数[true异步  false同步]
-        success: function(value){
-            src = value.src;
+        url: 'https://www.menguoli.com/hyo',
+        data: {'n': n, 'l': l, 'm': m},
+        async: false,//设置同步/异步的参数[true异步  false同步]
+        success: function (value) {
+            src = "https://menguoli.com/" + value.src;
             r = value.r;
-            if (value.y!='none'){
+            if (value.y != 'none') {
                 y = value.y
-            } 
+            }
+            console.log(src)
         }
     })
 
@@ -156,16 +161,24 @@ function getValue(n, l, m) {
     // eel.expose(result);
 
     // function result(imgPath, rvalue, qu) {
-        // src = imgPath
-        // r = rvalue
-        // y = qu
-        // console.log(src, r, y)
+    // src = imgPath
+    // r = rvalue
+    // y = qu
+    // console.log(src, r, y)
     // }
 }
 
 var size = 40
-function changeSize(val){
+var bri = 20
+
+function changeSize(val) {
     size = val
+    console.log(size)
+    drawNow()
+}
+
+function changeBri(val) {
+    bri = val
     drawNow()
 }
 
@@ -174,46 +187,58 @@ var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHei
 var renderer = new THREE.WebGLRenderer();
 
 
-
-
 //  画图
 function drawChladni(n, l, m) {
-
     getValue(n, l, m)
-
     setTimeout(function () {
         //密度图
         var canvas = document.getElementById("Canvas")
         var ctx = canvas.getContext("2d")
-        canvas.width = size*10
-        canvas.height = size*10
+        canvas.width = 400
+        canvas.height = 400
 
         // ctx.strokeStyle = "black"
         // ctx.font = "24px Arial"
         //
         // ctx.fillText("密度图", 140, 370)
         var img = new Image()
+        img.crossOrigin = '';
         img.src = src
         img.onload = function () {
             // console.log(img)
-            ctx.drawImage(img, 0,0, size*10, size*10);
-            ctx.strokeStyle='white'
+            ctx.drawImage(img, -size * 10 + 200, -size * 10 + 200, size * 20, size * 20);
+            var imageData = ctx.getImageData(-size * 10 + 200, -size * 10 + 200, size * 20, size * 20);
+            var length = imageData.data.length;
+            for (var index = 0; index < length; index += 4) {
+                var r = imageData.data[index];
+                var g = imageData.data[index + 1];
+                var b = imageData.data[index + 2];
+                //这里可以对 r g b 进行计算（这里的rgb是每个像素块的rgb颜色）
+                imageData.data[index] = r + bri;
+                imageData.data[index + 1] = g + bri;
+                imageData.data[index + 2] = b + bri;
+            }
+            // 更新新数据
+            ctx.putImageData(imageData, -size * 10 + 200, -size * 10 + 200,);
+            ctx.putImageData(imageData, -size * 10 + 200, -size * 10 + 200,);
+
+            ctx.strokeStyle = 'white'
             ctx.fillStyle = '#fff';
             ctx.font = "14px Arial"
             ctx.lineWidth = 2
-            for (var i =1 ;i<30;i++){
-                ctx.moveTo(0,size/3*i)
-                ctx.lineTo(5,size/3*i)
-                ctx.moveTo(size/3*i,size*10)
-                ctx.lineTo(size/3*i,size*10-5)
-                if (i%5==0){
-                    ctx.fillText(15-i, 8,size/3*i)
-                    ctx.fillText(i-15, size/3*i, size*10-8)
+            for (var i = 1; i < 30; i++) {
+                ctx.moveTo(0, 40 / 3 * i)
+                ctx.lineTo(5, 40 / 3 * i)
+                ctx.moveTo(40 / 3 * i, 40 * 10)
+                ctx.lineTo(40 / 3 * i, 40 * 10 - 5)
+                if (i % 5 == 0) {
+                    ctx.fillText(15 - i, 8, 40 / 3 * i)
+                    ctx.fillText(i - 15, 40 / 3 * i, 40 * 10 - 8)
                 }
             }
-            ctx.fillText("-15",8,size/3*29)
-            ctx.fillText("15",8,size/3*1)
-            ctx.fillText("15",size/3*28,size*10-8)
+            ctx.fillText("-15", 8, 40 / 3 * 29)
+            ctx.fillText("15", 8, 40 / 3 * 1)
+            ctx.fillText("15", 40 / 3 * 28, 40 * 10 - 8)
             ctx.stroke()
             ctx.beginPath();
             ctx.stroke();
@@ -226,33 +251,14 @@ function drawChladni(n, l, m) {
         ct.strokeStyle = 'red';
         ct.lineWidth = 3;
         ct.moveTo(0, 346);
-        for (var i = 0; i < 149; i++) {
+        for (var i = 0; i < y.length; i++) {
             ct.lineTo(i, 346 - y[i + 1])
         }
         ct.stroke();
-
-        // 密度色彩标定
-        // var co = document.getElementById('colo')
-        // var cc = 255
-        // var col = 255
-        // var cog = 165
-        // var cob = 0
-        // co.innerHTML = ''
-        // for (var i = 0; i < cc; i++) {
-          
-        //         col = col -1
-        //         cog = cog -0.1
-        //         cob = cog
-            
-
-        //     co.innerHTML += "<div style='background-color: rgb(" + col + "," + cog + "," + cob + ") ;height:" + 360 / cc + "px'></div>"
-        // }
-
-
         renderer.setClearColor('rgb(0,0,0)', 1.0);
-renderer.setSize(size*10, size*10);
-document.getElementById('3d').appendChild(renderer.domElement);
-camera.position.z = 120;
+        renderer.setSize(400, 400);
+        document.getElementById('3d').appendChild(renderer.domElement);
+        camera.position.z = 120;
         var geometry = new THREE.Geometry(); //声明一个几何体对象Geometry
         for (var i = 0; i < 91; i++) {
             for (var j = 0; j < 181; j++) {
@@ -281,7 +287,7 @@ camera.position.z = 120;
         animate();
         scene.add(cube);
 
-    }, 2000)
+    }, 100)
 
 
 }
