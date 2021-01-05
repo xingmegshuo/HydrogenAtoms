@@ -169,7 +169,7 @@ function getValue(n, l, m) {
 }
 
 var size = 40
-var bri = 20
+var bri = 0
 
 function changeSize(val) {
     size = val
@@ -214,9 +214,9 @@ function drawChladni(n, l, m) {
                 var g = imageData.data[index + 1];
                 var b = imageData.data[index + 2];
                 //这里可以对 r g b 进行计算（这里的rgb是每个像素块的rgb颜色）
-                imageData.data[index] = r + bri;
-                imageData.data[index + 1] = g + bri;
-                imageData.data[index + 2] = b + bri;
+                imageData.data[index] = r + (r - 127) * bri / 255;
+                imageData.data[index + 1] = g + (g - 127) * bri / 255;
+                imageData.data[index + 2] = b + (b - 127) * bri / 255;
             }
             // 更新新数据
             ctx.putImageData(imageData, -size * 10 + 200, -size * 10 + 200,);
@@ -256,7 +256,7 @@ function drawChladni(n, l, m) {
         }
         ct.stroke();
         renderer.setClearColor('rgb(0,0,0)', 1.0);
-        renderer.setSize(400, 400);
+        renderer.setSize(600, 400);
         document.getElementById('3d').appendChild(renderer.domElement);
         camera.position.z = 120;
         var geometry = new THREE.Geometry(); //声明一个几何体对象Geometry
@@ -267,7 +267,7 @@ function drawChladni(n, l, m) {
                 geometry.vertices.push(a)
             }
         }
-
+        console.log(chladniColor)
         //如果以点的形式渲染，需要设置点对应材质
         var pointMaterial = new THREE.PointsMaterial({
             color: chladniColor,    //设置颜色，默认 0xFFFFFF
@@ -286,7 +286,6 @@ function drawChladni(n, l, m) {
         };
         animate();
         scene.add(cube);
-
     }, 100)
 
 
@@ -368,7 +367,7 @@ function getColor(percent, which) {
         "border-bottom-color": `rgb(${r},${g},${b})`,
 
     })
-    return `rgb(${r},${g},${b})`
+    return "rgb(" + r.toFixed(0) + "," + g.toFixed(0) + "," + b.toFixed(0) + ")"
 }
 
 function reset() {
