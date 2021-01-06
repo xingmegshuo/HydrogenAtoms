@@ -106,7 +106,7 @@ originColor.onchange = function () {
 //图形绘制比例
 var scale = 2
 //初始绘制颜色
-var chladniColor = "#FF4040"
+
 
 //缓存计算结果
 var cache = null
@@ -125,7 +125,7 @@ let gravelInitialPosi = 33
 gravelindicator.style.left = `${gravelInitialPosi - 10}px`
 
 //初始化颜色选择器颜色
-getColor(gravelInitialPosi / gravelBar.offsetWidth, 'gravel')
+var chladniColor = getColor(gravelInitialPosi / gravelBar.offsetWidth, 'gravel')
 
 
 // 色彩条点击
@@ -256,7 +256,7 @@ function drawChladni(n, l, m) {
         }
         ct.stroke();
         renderer.setClearColor('rgb(0,0,0)', 1.0);
-        renderer.setSize(600, 400);
+        renderer.setSize(400, 400);
         document.getElementById('3d').appendChild(renderer.domElement);
         camera.position.z = 120;
         var geometry = new THREE.Geometry(); //声明一个几何体对象Geometry
